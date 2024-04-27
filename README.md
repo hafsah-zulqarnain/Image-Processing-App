@@ -1,4 +1,4 @@
-**Image Processing App**
+**Image Processing App**  
 This Python application allows users to perform various image processing tasks using a graphical user interface (GUI) built with Tkinter. Users can select an image file, apply different image processing techniques, and visualize the results in real-time.  
 
 To run the application, follow these steps:  
