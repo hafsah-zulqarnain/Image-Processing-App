@@ -139,13 +139,28 @@ def mmse_filter(image, noise_variance, kernel_size):
     # Calculate local variance
     local_variance = cv2.GaussianBlur(image.astype(np.float32) ** 2, (kernel_size, kernel_size), 0) - cv2.GaussianBlur(
         image.astype(np.float32), (kernel_size, kernel_size), 0) ** 2
+    # Scenario 1: No Noise (noise variance = 0)
+    if noise_variance == 0:
+        # Return the original image without any filtering
+        return image.copy()
 
-    weights = noise_variance / (local_variance + noise_variance)
+    # Scenario 2: Noise Variance Equals Local Variance
+    elif noise_variance == np.mean(local_variance):
+        # Perform simple averaging to remove noise
+        filtered_image = cv2.blur(image, (kernel_size, kernel_size))
 
-    filtered_image = (1 - weights) * image + weights * cv2.blur(image, (kernel_size, kernel_size))
+    # Scenario 3: Noise Variance Less Than Local Variance
+    elif noise_variance < np.mean(local_variance):
+        # Calculate weights for weighted averaging
+        weights = noise_variance / (local_variance + noise_variance)
+        # Apply weighted averaging
+        filtered_image = (1 - weights) * image + weights * cv2.blur(image, (kernel_size, kernel_size))
+
+    else:
+        # Invalid scenario
+        raise ValueError("Invalid noise variance scenario.")
 
     return filtered_image.astype(np.uint8)
-
 
 def linear_mapping_gui():
     linear_mapping_window = Toplevel(root)
